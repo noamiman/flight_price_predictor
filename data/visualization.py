@@ -53,8 +53,8 @@ plt.title('Price Distribution: Summer vs Not Summer')
 plt.figure(figsize=(10,6))
 sns.lineplot(x='hour', y='price', data=df)
 plt.title('Average Price by Hour of Day')
-#plt.savefig('graphs/price_by_hour.png', dpi=300)
-#plt.show()
+plt.savefig('graphs/price_by_hour.png', dpi=300)
+plt.show()
 
 top_dest = df['destination'].value_counts().nlargest(10).index
 plt.figure(figsize=(10,6))
