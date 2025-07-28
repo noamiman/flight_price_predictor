@@ -1,0 +1,13 @@
+search_datetime          datetime64[ns]
+origin                           object
+destination                      object
+days_before_departure             int64
+hour_of_day                       int32
+day_of_week                       int32
+is_weekend                        int64
+is_summer                         int64
+is_holiday                        int64
+price                            object
+dtype: object                             object
+
+example: 2025-03-05 01:00:00,"TLV", "LON", 179,1,2,0,0,0,230.77 USD
