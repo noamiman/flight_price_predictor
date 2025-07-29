@@ -2,6 +2,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 import pandas as pd
+import numpy as np
 
 df = pd.read_csv('/Users/noamiman/PycharmProjects/flight_price_predictor/data/cleaned_data.csv')
 
@@ -23,5 +24,6 @@ model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 
 print("R² Score:", r2_score(y_test, y_pred))
-print("RMSE:", mean_squared_error(y_test, y_pred, squared=False))
+print("RMSE:", np.sqrt(mean_squared_error(y_test, y_pred)))
+
 
