@@ -26,4 +26,5 @@ y_pred = model.predict(X_test)
 print("R² Score:", r2_score(y_test, y_pred))
 print("RMSE:", np.sqrt(mean_squared_error(y_test, y_pred)))
 
-
+#R² Score: 0.9370857336962288
+#RMSE: 13.75077544430023
