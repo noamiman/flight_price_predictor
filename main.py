@@ -1,7 +1,13 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from datetime import datetime
+from datetime import datetime, timedelta
+import random
+import pandas as pd
+import joblib
 
+model, feature_columns = joblib.load('src/flight_price_model.pkl')
+pd.set_option('display.max_columns', None)  # הצג את כל העמודות
+pd.set_option('display.max_rows', None)     # הצג את כל השורות
 # ===== יצירת חלון =====
 root = tk.Tk()
 root.title("Flight Price Predictor")
@@ -35,6 +41,52 @@ end_date_entry.grid(row=2, column=1, padx=10)
 result_label = tk.Label(root, text="", font=("Helvetica", 16), fg="#f1c40f", bg="#2c3e50", justify="left")
 result_label.pack(pady=20)
 
+
+def features_generator_by_time(startTime, endTime, destination, num_samples):
+    destinations = ['LON', 'NYC', 'PAR', 'BER', 'AMS', 'BCN', 'ROM', 'ATH', 'BKK', 'DXB']
+    destination_map = {
+        destination: i for i, destination in enumerate(destinations)
+    }
+
+    start_time_DT = datetime.strptime(startTime, "%Y-%m-%d")
+    end_time_DT = datetime.strptime(endTime, "%Y-%m-%d")
+    delta = end_time_DT - start_time_DT
+
+    columns = ["year", "month", "day_in_month", "hour", "part_of_day", "day_of_week",
+               "is_weekend", "is_summer", "is_holiday", "days_before_departure", "destination_encoded"]
+    df = pd.DataFrame(columns=columns)
+    for i in range(num_samples):
+        des_num = destination_map[destination]
+        random_date_range = random.randint(0, delta.days)
+        random_date = start_time_DT + timedelta(days=random_date_range)
+        year = random_date.year
+        month = random_date.month
+        day = random_date.day
+        hour = random.randint(0, 23)
+        part_of_day = random.randint(1, 6)
+        day_of_week = random.randint(0, 6)
+        is_weekend = random.randint(0, 1)
+        is_summer = random.randint(0, 1)
+        is_holiday = random.randint(0, 1)
+        days_before_departure = random.randint(1, 180)
+
+        df_new_row = pd.DataFrame([{
+            "year": year,
+            "month": month,
+            "day_in_month": day,
+            "hour": hour,
+            "part_of_day": part_of_day,
+            "day_of_week": day_of_week,
+            "is_weekend": is_weekend,
+            "is_summer": is_summer,
+            "is_holiday": is_holiday,
+            "days_before_departure": days_before_departure,
+            "destination_encoded": des_num
+
+        }])
+        df = pd.concat([df, df_new_row], ignore_index=True)
+    return df
+
 # ===== כפתור חיפוש =====
 def find_best_dates():
     try:
@@ -44,27 +96,19 @@ def find_best_dates():
 
         if start_date > end_date:
             raise ValueError("Start date must be before end date.")
-
-        # כאן תכניס את הקריאה למודל והחישוב
-        # לדוגמה:
-        # best_options = model.get_best_dates(destination, start_date, end_date)
-
-        # הדמיה לתוצאה:
-        best_options = [
-            ("2025-08-04", 179),
-            ("2025-08-12", 190),
-            ("2025-08-23", 200)
-        ]
-
-        # הצגת התוצאה
-        text = f"Best dates to book flight to {destination}:\n\n"
-        for date, price in best_options:
-            text += f"🗓 {date} — ${price}\n"
-
-        result_label.config(text=text)
-
+        num_samples = 100
+        data_generator = features_generator_by_time(start_date_entry.get(), end_date_entry.get(),
+                                                    destination, num_samples)
+        predicted_prices = model.predict(data_generator)
+        data_generator['predicted price'] = predicted_prices.round(2)
+        top_3_cheapest = data_generator.sort_values(by='predicted price').head(3)
+        print(top_3_cheapest)
+    #columns[destination:[0-9],year[2025],month[1-12],hour[0-23],part_of_day[1-6],
+        # day_of_week[1-7],is_weekend[1/0],is_summer[1/0],
+        # is_holiday[1/0],days_before_departure[1-180]]
     except Exception as e:
         messagebox.showerror("Input Error", f"Invalid input:\n{e}")
+
 
 search_button = tk.Button(root, text="🔍 Find Best Dates", font=("Helvetica", 16, "bold"),
                           bg="#1abc9c", fg="black", activebackground="#16a085",

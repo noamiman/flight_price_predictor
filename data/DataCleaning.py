@@ -8,7 +8,7 @@ pd.set_option('display.max_colwidth', None) # מציג את כל תוכן התא
 df = pd.read_csv('flight_prices_extended.csv')
 print(df.head(10))
 
-columns = ["origin", "destination", "year", "month", "hour", "part_of_day", "day_of_week", "is_weekend",
+columns = ["origin", "destination", "year", "month", "day_in_month", "hour", "part_of_day", "day_of_week", "is_weekend",
            "is_summer", "is_holiday", "days_before_departure", "price"]
 
 cleaned_data = pd.DataFrame(columns=columns)
@@ -18,6 +18,8 @@ print(cleaned_data)
 df['search_datetime'] = pd.to_datetime(df['search_datetime'])
 df['year'] = df['search_datetime'].dt.year
 df['month'] = df['search_datetime'].dt.month
+df['day_in_month'] = df['search_datetime'].dt.day
+print(df['day_in_month'])
 df['hour'] = df['search_datetime'].dt.hour
 
 # part of day embedded by [1:morning, 2:noon, 3:afternoon, 4:evening, 5:night, 6:midNight]
