@@ -1,9 +1,9 @@
 import pandas as pd
 
-# הרחבת ההגדרות להצגה מלאה של עמודות
-pd.set_option('display.max_columns', None)  # מציג את כל העמודות
-pd.set_option('display.width', 1000)        # מרחיב את רוחב ההדפסה
-pd.set_option('display.max_colwidth', None) # מציג את כל תוכן התא
+# Extend settings to display all columns
+pd.set_option('display.max_columns', None)  # Display all columns
+pd.set_option('display.width', 1000)        # Increase console output width
+pd.set_option('display.max_colwidth', None) # Show full cell content
 
 df = pd.read_csv('flight_prices_extended.csv')
 print(df.head(10))
@@ -53,7 +53,7 @@ import holidays
 israel_holidays = holidays.country_holidays('IL')
 df['is_holiday'] = df['search_datetime'].dt.date.apply(lambda date: int(date in israel_holidays))
 
-# הסרה של כל תו שהוא לא ספרה או פסיק או נקודה
+# Remove any character that is not a digit, comma, or period
 df['price'] = df['price'].replace(r'[^\d.]', '', regex=True).astype(float)
 
 cleaned_data = df[columns].copy()

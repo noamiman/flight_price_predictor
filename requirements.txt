@@ -5,5 +5,4 @@ seaborn
 statsmodels
 scikit-learn
 joblib
-matplotlib
 shap

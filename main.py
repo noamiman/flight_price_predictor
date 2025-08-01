@@ -7,25 +7,25 @@ import joblib
 
 from utills import generate_features, show_price_graph, analyze_shap_top_cheap
 
-# === הגדרות ראשוניות ===
+# === Initial Configuration ===
 model, feature_columns = joblib.load('src/flight_price_model.pkl')
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
-# === GUI ראשי ===
+# === main GUI ===
 root = tk.Tk()
 root.title("Flight Price Predictor")
 root.geometry("600x500")
 root.configure(bg="#2c3e50")
 
-# === כותרת ===
+# === title ===
 tk.Label(root, text="✈️ Flight Price Optimizer", font=("Helvetica", 24, "bold"),
          fg="#1abc9c", bg="#2c3e50").pack(pady=30)
 
 form = tk.Frame(root, bg="#2c3e50")
 form.pack(pady=10)
 
-# === שדות קלט ===
+# === User Input Fields ===
 tk.Label(form, text="Destination:", font=("Helvetica", 16),
          fg="#ecf0f1", bg="#2c3e50").grid(row=0, column=0, sticky="e", pady=10, padx=10)
 destination_entry = ttk.Entry(form, font=("Helvetica", 16), width=25)
@@ -46,7 +46,7 @@ tk.Label(form, text="Days Before:", font=("Helvetica", 16),
 days_before_entry = ttk.Entry(form, font=("Helvetica", 16), width=25)
 days_before_entry.grid(row=3, column=1, padx=10)
 
-# === פעולה עיקרית ===
+# === Main Function ===
 def find_best_dates():
     try:
         destination = destination_entry.get().strip().upper()

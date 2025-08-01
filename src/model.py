@@ -33,6 +33,6 @@ print("RMSE:", np.sqrt(mean_squared_error(y_test, y_pred)))
 #R² Score: 0.9370857336962288
 #RMSE: 13.75077544430023
 
-# שמור את המודל כקובץ .pkl
+# Save the model as a .pkl file
 feature_columns = X.columns.tolist()
 joblib.dump((model, feature_columns), 'flight_price_model.pkl')

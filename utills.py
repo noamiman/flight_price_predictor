@@ -63,7 +63,7 @@ def show_price_graph(df, destination, model, feature_columns, parent_window):
     fig, axs = plt.subplots(2, 2, figsize=(16, 10), dpi=100)
     plt.subplots_adjust(hspace=0.4, wspace=0.3)
 
-    # === גרף 1: Price over time
+    # === graph 1: Price over time
     axs[0, 0].scatter(sorted_df['flight_datetime'], sorted_df['predicted price'],
                       color='skyblue', s=40, alpha=0.8)
     top_3 = sorted_df.nsmallest(3, 'predicted price')
@@ -80,7 +80,7 @@ def show_price_graph(df, destination, model, feature_columns, parent_window):
     axs[0, 0].tick_params(axis='x', rotation=30)
     axs[0, 0].grid(True, linestyle='--', alpha=0.5)
 
-    # === גרף 2: Price vs. days_before_departure
+    # === graph 2: Price vs. days_before_departure
     axs[0, 1].scatter(sorted_df['days_before_departure'], sorted_df['predicted price'],
                      alpha=0.6, color='orange')
     axs[0, 1].set_title("Price vs. Days Before Departure")
@@ -88,7 +88,7 @@ def show_price_graph(df, destination, model, feature_columns, parent_window):
     axs[0, 1].set_ylabel("Price ($)")
     axs[0, 1].grid(True)
 
-    # === גרף 3: Part of day
+    # === graph 3: Part of day
     part_labels = ['Early\nNight', 'Morning', 'Noon', 'Afternoon', 'Evening', 'Late\nNight']
     axs[1, 0].boxplot([sorted_df[sorted_df['part_of_day'] == i]['predicted price'] for i in range(1, 7)],
                      labels=part_labels)
@@ -96,7 +96,7 @@ def show_price_graph(df, destination, model, feature_columns, parent_window):
     axs[1, 0].set_xlabel("Part of Day")
     axs[1, 0].set_ylabel("Price ($)")
 
-    # === גרף 4: Day of week
+    # === graph 4: Day of week
     day_labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
     axs[1, 1].boxplot([sorted_df[sorted_df['day_of_week'] == i]['predicted price'] for i in range(7)],
                       labels=day_labels)
@@ -104,11 +104,13 @@ def show_price_graph(df, destination, model, feature_columns, parent_window):
     axs[1, 1].set_xlabel("Day")
     axs[1, 1].set_ylabel("Price ($)")
 
-    # כפתור לניתוח SHAP של 50 הטיסות הכי זולות
+    # Analyze SHAP values for the top 50 cheapest flights
     tk.Button(window, text="🧠 Analyze Top 50 Cheapest (SHAP)",
               font=("Helvetica", 12, "bold"), bg="#f39c12", fg="black",
               command=lambda: analyze_shap_top_cheap(model, df, feature_columns, window)
               ).pack(pady=15)
+
+    save_figure(fig, "flight_price_analysis")
 
     canvas = FigureCanvasTkAgg(fig, master=window)
     canvas.draw()
@@ -167,5 +169,35 @@ def analyze_shap_top_cheap(model, df, feature_columns, parent_window):
         canvas1.draw()
         canvas1.get_tk_widget().pack(pady=10)
 
+        # saving example data
+        """
+        fig1 = plt.figure(figsize=(10, 6))
+        shap.summary_plot(shap_values, top_cheap[feature_columns], show=False)
+        save_figure(fig1, "shap_summary")
+
+        fig2 = plt.figure(figsize=(10, 5))
+        shap.dependence_plot("days_before_departure", shap_values, top_cheap[feature_columns],
+                             interaction_index="is_holiday", show=False)
+        save_figure(plt.gcf(), "shap_dependence")
+        """
+
     except Exception as e:
         messagebox.showerror("SHAP Error", f"SHAP analysis failed:\n{e}")
+
+import os
+from datetime import datetime
+
+def save_figure(fig, name, folder="outputs", dpi=300):
+    """
+    Saves a matplotlib Figure as a PNG file with a timestamp.
+    :param fig: matplotlib Figure object
+    :param name: Base name for the file (without extension)
+    :param folder: Target folder to save the file (default: 'outputs')
+    :param dpi: Image resolution in dots per inch (default: 300)
+    """
+    os.makedirs(folder, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{name}_{timestamp}.png"
+    path = os.path.join(folder, filename)
+    fig.savefig(path, bbox_inches='tight', dpi=dpi)
+    print(f"✅ Figure saved: {path}")

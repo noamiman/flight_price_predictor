@@ -2,12 +2,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# קריאת הקובץ
+# Read the file
 df = pd.read_csv('cleaned_data.csv')
 
 correlation_matrix = df.corr(numeric_only=True)
 
-# ציור קורלציה
+# Plot correlation
 plt.figure(figsize=(10, 8))
 sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5)
 plt.title('Correlation Matrix')
@@ -15,7 +15,7 @@ plt.tight_layout()
 #plt.savefig('graphs/correlation_matrix.png', dpi=300)
 #plt.show()
 
-# ציור היטמאפ מחיר
+# Plot heatmap price
 plt.figure(figsize=(8,6))
 sns.histplot(df['price'], bins=30, kde=True)
 plt.title('Price Distribution')
@@ -24,11 +24,11 @@ plt.ylabel('Count')
 #plt.savefig('graphs/price_distribution.png', dpi=300)
 #plt.show()
 
-# מחיר מול התקרבות לטיסה
+# Price vs. proximity to departure
 plt.figure(figsize=(8, 6))
-# פיזור הנתונים בפועל
+# Actual data distribution
 sns.scatterplot(x='days_before_departure', y='price', data=df, alpha=0.4)
-# קו מגמה חלק (לא לינארי - lowess)
+# Smooth trend line (non-linear - LOWESS)
 sns.regplot(x='days_before_departure', y='price', data=df, scatter=False, lowess=True, color='red')
 plt.title('Price vs. Days Before Departure')
 plt.xlabel('Days Before Departure')
